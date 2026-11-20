@@ -1,0 +1,23 @@
+@autosBackend_HostAddress = http://localhost:5191
+
+# Sin versión explícita → resuelve a la versión por defecto (v1)
+GET {{autosBackend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+# Versión explícita por query string
+GET {{autosBackend_HostAddress}}/weatherforecast?api-version=1.0
+Accept: application/json
+
+###
+
+# Versión inexistente → 400
+GET {{autosBackend_HostAddress}}/weatherforecast?api-version=2.0
+Accept: application/json
+
+###
+
+# Documento OpenAPI de la v1
+GET {{autosBackend_HostAddress}}/openapi/v1.json
+Accept: application/json
