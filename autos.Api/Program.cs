@@ -34,16 +34,11 @@ builder.Services.AddScoped<IMarcaAutoService, MarcaAutoService>();
 
 var app = builder.Build();
 
-// Las migraciones se aplican siempre; los datos de ejemplo solo en Development.
+// Las migraciones, incluido el seed definido con HasData, se aplican en el arranque.
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     await db.Database.MigrateAsync();
-
-    if (app.Environment.IsDevelopment())
-    {
-        await DbSeeder.SeedAsync(db);
-    }
 }
 
 app.UseExceptionHandler();

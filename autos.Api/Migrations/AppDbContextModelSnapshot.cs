@@ -58,6 +58,48 @@ namespace autos.Api.Migrations
                         .IsUnique();
 
                     b.ToTable("MarcasAutos", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("11111111-1111-1111-1111-111111111111"),
+                            CreatedDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Fabricante japonés de automóviles",
+                            IsActive = true,
+                            Name = "Toyota",
+                            OriginCountry = "Japón",
+                            UpdatedDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = new Guid("22222222-2222-2222-2222-222222222222"),
+                            CreatedDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Fabricante japonés de automóviles y motocicletas",
+                            IsActive = true,
+                            Name = "Honda",
+                            OriginCountry = "Japón",
+                            UpdatedDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = new Guid("33333333-3333-3333-3333-333333333333"),
+                            CreatedDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Fabricante estadounidense de automóviles",
+                            IsActive = true,
+                            Name = "Ford",
+                            OriginCountry = "Estados Unidos",
+                            UpdatedDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = new Guid("44444444-4444-4444-4444-444444444444"),
+                            CreatedDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Fabricante alemán de automóviles",
+                            IsActive = true,
+                            Name = "BMW",
+                            OriginCountry = "Alemania",
+                            UpdatedDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        });
                 });
 #pragma warning restore 612, 618
         }
