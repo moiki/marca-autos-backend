@@ -8,11 +8,46 @@ API REST para administrar marcas de autos, construida con .NET 10, EF Core y Pos
 ./dev.sh
 ```
 
-El script restaura dependencias, avisa si hay cambios de modelo sin migrar y levanta la API con hot reload en `http://localhost:5191`. Las migraciones se aplican automáticamente al arrancar; el seed de marcas (`Toyota`, `Honda`, `Ford`, `BMW`) solo se inserta en el entorno `Development`.
+El script cierra instancias anteriores del API, restaura dependencias, avisa si hay cambios de modelo sin migrar y levanta la API con hot reload en `http://localhost:5191`. Las migraciones y el seed (`Toyota`, `Honda`, `Ford`, `BMW`) se aplican automáticamente al arrancar.
+
+## Arranque con Docker Compose
+
+Requiere Docker Desktop en ejecución. Levanta PostgreSQL y la API en contenedores:
+
+```bash
+docker compose up --build
+```
+
+Para dejarlo corriendo en segundo plano:
+
+```bash
+docker compose up -d --build
+```
+
+| Servicio | URL / conexión |
+|---|---|
+| API | `http://localhost:8080` |
+| PostgreSQL (desde el host) | `localhost:5433`, base `autos`, usuario `autos`, password `autos` |
+| PostgreSQL (desde la red de compose) | `postgres:5432` |
+
+Comandos útiles:
+
+```bash
+docker compose ps                      # estado de los contenedores
+docker compose logs -f autos-api       # logs de la API
+docker compose down                    # detener y eliminar contenedores
+docker compose down -v                 # además, borrar el volumen de datos
+```
+
+Notas:
+
+- El compose usa el puerto host **5433** para no chocar con un PostgreSQL local en 5432.
+- El contenedor de la API corre con `ASPNETCORE_ENVIRONMENT=Production` y se conecta a `postgres:5432`.
+- Las migraciones y el seed `HasData` se aplican al arrancar la API, así que no hay pasos manuales de base de datos.
+- Los datos se conservan en el volumen `postgres-data`; `docker compose down -v` los elimina.
 
 ## Requisitos
 
-- .NET 10 SDK y herramienta global `dotnet-ef`
-- PostgreSQL local con la base de datos `autos` y las credenciales de `appsettings.Development.json`
-
-También hay un `compose.yaml` para levantar la API junto con PostgreSQL en contenedores.
+- .NET 10 SDK y herramienta global `dotnet-ef` (arranque local)
+- PostgreSQL local con la base de datos `autos` y las credenciales de `appsettings.Development.json` (arranque local)
+- Docker Desktop (arranque con compose)
