@@ -3,6 +3,7 @@ using autos.Api.Features.MarcaAutos;
 using autos.Api.Interceptors;
 using autos.Api.Middlewares;
 using Microsoft.EntityFrameworkCore;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,6 +48,7 @@ app.UseExceptionHandler();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 
 // app.UseHttpsRedirection();

@@ -10,6 +10,8 @@ API REST para administrar marcas de autos, construida con .NET 10, EF Core y Pos
 
 El script cierra instancias anteriores del API, restaura dependencias, avisa si hay cambios de modelo sin migrar y levanta la API con hot reload en `http://localhost:5191`. Las migraciones y el seed (`Toyota`, `Honda`, `Ford`, `BMW`) se aplican automáticamente al arrancar.
 
+Con la API en marcha, la interfaz web para explorar y probar los endpoints está en **http://localhost:5191/scalar**. El documento OpenAPI está en `/openapi/v1.json`. Ambos se exponen únicamente en el entorno `Development`; en `Production` devuelven 404.
+
 ## Arranque con Docker Compose
 
 Requiere Docker Desktop en ejecución. Levanta PostgreSQL y la API en contenedores:
