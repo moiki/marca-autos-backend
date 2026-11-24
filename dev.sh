@@ -1,12 +1,18 @@
 #!/usr/bin/env bash
-# Arranque de desarrollo: cierra instancias anteriores, restaura, avisa de modelo
-# sin migrar y lanza la API con hot reload. Las migraciones (incluido el seed
-# HasData) las aplica la propia app en Program.cs al arrancar.
+# Arranque de desarrollo de BrandCars: cierra instancias anteriores, restaura, avisa de modelo
+# sin migrar y lanza la API con hot reload. Las migraciones (incluido el seed HasData) las
+# aplica la propia app en Program.cs al arrancar en Development.
 set -euo pipefail
 
 cd "$(dirname "$0")"
 
-PORT=5191
+# Debe coincidir con profiles.http.applicationUrl en BrandCars.Api/Properties/launchSettings.json.
+PORT=5137
+API_PROJECT=BrandCars.Api
+SOLUTION=BrandCars.slnx
+
+# AddInfrastructure lee ConnectionStrings:DefaultConnection desde appsettings.Development.json.
+export ASPNETCORE_ENVIRONMENT=Development
 
 echo "==> Limpiando instancias anteriores del API"
 
@@ -32,11 +38,11 @@ if [ -n "$PORT_PIDS" ]; then
 fi
 
 # 2. Watchers de este proyecto: si sobreviven, reinician al hijo y recuperan el puerto.
-pkill -f 'dotnet watch run --project autos.Api' 2>/dev/null || true
-pkill -f 'dotnet-watch.dll run --project autos.Api' 2>/dev/null || true
+pkill -f "dotnet watch run --project $API_PROJECT" 2>/dev/null || true
+pkill -f "dotnet-watch.dll run --project $API_PROJECT" 2>/dev/null || true
 sleep 1
-pkill -9 -f 'dotnet watch run --project autos.Api' 2>/dev/null || true
-pkill -9 -f 'dotnet-watch.dll run --project autos.Api' 2>/dev/null || true
+pkill -9 -f "dotnet watch run --project $API_PROJECT" 2>/dev/null || true
+pkill -9 -f "dotnet-watch.dll run --project $API_PROJECT" 2>/dev/null || true
 
 # 3. Si aún está ocupado, fallar temprano con información accionable.
 if lsof -nP -tiTCP:$PORT -sTCP:LISTEN >/dev/null 2>&1; then
@@ -48,16 +54,22 @@ fi
 echo "    Puerto $PORT libre."
 
 echo "==> Restore"
-dotnet restore autosBackend.slnx
+dotnet restore "$SOLUTION"
 
 echo "==> ¿Cambios de modelo sin migrar?"
-if dotnet ef migrations has-pending-model-changes --project autos.Api; then
+if ! dotnet ef --version >/dev/null 2>&1; then
+  echo "    ⚠️  dotnet-ef no está instalado; se omite la comprobación."
+  echo "    Instálalo con: dotnet tool install --global dotnet-ef"
+elif EF_OUTPUT=$(dotnet ef migrations has-pending-model-changes \
+      --project BrandCars.Infra --startup-project "$API_PROJECT" 2>&1); then
   echo "    Modelo alineado con las migraciones."
 else
-  echo "    ⚠️  Hay cambios de modelo sin migrar."
-  echo "    Ejecuta: dotnet ef migrations add <Nombre> --project autos.Api"
+  echo "    ⚠️  Hay cambios de modelo sin migrar (o falló la comprobación):"
+  echo "$EF_OUTPUT" | sed 's/^/       /'
+  echo "    Ejecuta: dotnet ef migrations add <Nombre> --project BrandCars.Infra --startup-project $API_PROJECT"
 fi
 
-echo "==> Arrancando API con watch (http://localhost:$PORT)"
-echo "    Migraciones y seed HasData se aplican automáticamente en el arranque."
-dotnet watch run --project autos.Api --launch-profile http
+echo "==> Arrancando API con watch (http://localhost:$PORT/scalar)"
+echo "    El perfil 'http' abre el navegador en Scalar."
+echo "    Migraciones y seed HasData se aplican al arrancar (Database:MigrateOnStartup=true en Development)."
+dotnet watch run --project "$API_PROJECT" --launch-profile http

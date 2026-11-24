@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="compose.yaml" />
+  </Folder>
+  <Project Path="BrandCars.Api\BrandCars.Api.csproj" />
+  <Project Path="BrandCars.Application/BrandCars.Application.csproj" />
+  <Project Path="BrandCars.Domain/BrandCars.Domain.csproj" />
+  <Project Path="BrandCars.Infra/BrandCars.Infra.csproj" />
+</Solution>

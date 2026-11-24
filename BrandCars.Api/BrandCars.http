@@ -1,0 +1,10 @@
+@BrandCars_HostAddress = http://localhost:5137
+
+GET {{BrandCars_HostAddress}}/api/marcas-autos
+Accept: application/json
+
+###
+
+GET {{BrandCars_HostAddress}}/health
+
+###
