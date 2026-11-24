@@ -1,6 +1,6 @@
 # Follow-up — elementos para una siguiente fase
 
-Items deliberadamente **fuera del alcance** de la fase actual (arquitectura hexagonal + `GET api/marcas-autos`). Registrarlos aquí evita improvisarlos dentro de la capa equivocada.
+Items deliberadamente **fuera del alcance** de la fase actual (arquitectura hexagonal + `GET api/marcas-autos`). Registrarlos aquí evita improvisarlos dentro de la capa equivocada. Los que ya se cerraron se conservan al final con su resultado.
 
 ## 1. Soft delete automático con `SaveChangesInterceptor`
 
@@ -74,12 +74,23 @@ El interceptor es stateless, por eso se instancia con `new`. Si más adelante ne
 
 ---
 
-## Otros pendientes detectados
+## Otros items detectados
 
-- **Pruebas** unitarias y de cobertura del caso de uso (orden por nombre, mapeo a DTO, cancelación) y del repositorio.
-- **Test de arquitectura** (NetArchTest / ArchUnitNET) para blindar la regla de dependencia y la ausencia de `PackageReference` en Domain/Application.
-- **Docker**: `compose.yaml` apunta a `BrandCars/Dockerfile`, pero el Dockerfile real está en `BrandCars.Api/Dockerfile`; además hay que pasar la connection string al contenedor.
-- **README** con las decisiones de arquitectura y cómo ejecutar la solución.
-- **Seguridad**: el middleware de excepciones expone `ex.ToString()` (tal como pide el enunciado); limitar el detalle antes de exponer la API a producción.
-- **Git**: el directorio aún no es repositorio; inicializarlo y crear un commit por fase si se decide versionar el proyecto.
-- **Configuración local**: el rol `postgres` de la máquina no tiene permiso de login; la verificación se hizo con otra cuenta y una BD temporal. Ajustar `appsettings.Development.json` según el entorno de cada desarrollador.
+### Pendientes
+
+| Item | Siguiente paso |
+|---|---|
+| **Pruebas** | No hay proyecto de tests en la solución. Cubrir el caso de uso (orden por nombre, mapeo a DTO, cancelación) y el repositorio. |
+| **Test de arquitectura** | NetArchTest / ArchUnitNET para blindar la regla de dependencia y la ausencia de `PackageReference` en Domain/Application. |
+| **Seguridad** | `ExceptionHandlingMiddleware` expone `ex.ToString()` en el `ProblemDetails` (tal como pide el enunciado). Como Compose corre en `Production`, limitar el detalle antes de publicar la API. |
+
+### Resueltos
+
+| Item | Resultado |
+|---|---|
+| **Docker** | `compose.yaml` apunta a `BrandCars.Api/Dockerfile`, incluye el servicio `postgres` con healthcheck, puerto host `5433` y volumen `postgres-data`; la API recibe `ConnectionStrings__DefaultConnection` y `Database__MigrateOnStartup=true`. |
+| **README** | `README.md` en la raíz documenta el arranque local con `./dev.sh`, el arranque con Docker Compose, los endpoints y la configuración. |
+| **Git** | Repositorio inicializado en la rama `feat/apply-hex-arq`, con `origin` → `git@github_moiki:moiki/marca-autos-backend.git` e historial por fases (`first commit`, seed, `dev.sh`, README, Scalar, arquitectura hexagonal). |
+| **Configuración local** | Documentada en `README.md`: crear el rol/base `autos` o levantar PostgreSQL en Docker; `appsettings.Development.json` apunta a `localhost:5432` y el `5433` queda para el PostgreSQL de Compose. |
+
+> Nota de entorno: en la máquina donde se validó, el rol `postgres` no permite login; se usó otra cuenta y una BD temporal. Cada desarrollador debe ajustar `appsettings.Development.json` a su entorno.

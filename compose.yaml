@@ -1,7 +1,36 @@
 ﻿services:
-  brandcars:
-    image: brandcars
+  postgres:
+    image: postgres:17-alpine
+    container_name: brandcars-postgres
+    environment:
+      POSTGRES_DB: autos
+      POSTGRES_USER: autos
+      POSTGRES_PASSWORD: autos
+    ports:
+      # 5433 en el host para no chocar con un PostgreSQL local en 5432.
+      - "5433:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U autos -d autos"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  brandcars-api:
+    image: brandcars-api
     build:
       context: .
-      dockerfile: BrandCars/Dockerfile
+      dockerfile: BrandCars.Api/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=autos;Username=autos;Password=autos"
+      Database__MigrateOnStartup: "true"
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
 
+volumes:
+  postgres-data:
